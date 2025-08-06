@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;500;700&display=swap" rel="stylesheet">
-    <!-- Confetti script removed -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --page-bg-color: #000000;
@@ -280,8 +280,7 @@
         // --- Game State Variables ---
         let score = 0;
         let highScore = 0;
-        const CELEBRATION_MILESTONE = 10;
-
+        
         // --- DOM Elements ---
         const mainButton = document.getElementById('mainButton');
         const scoreDisplay = document.getElementById('scoreDisplay');
@@ -309,7 +308,7 @@
             }
         });
 
-        // --- Sound Logic ---
+        // --- Sound and Effects Logic ---
         let audioCtx;
         function getAudioContext() {
             if (!audioCtx) {
@@ -348,11 +347,21 @@
         }
 
         function playResetSound() {
-            playSound([587.33, 440], 0.08, 0.2);
+            playSound([440, 220], 0.08, 0.2);
         }
 
         function playCelebrationSound() {
             playSound([523.25, 659.25, 783.99, 1046.50], 0.1, 0.3);
+        }
+        
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 200,
+                    spread: 100,
+                    origin: { y: 0.6 }
+                });
+            }
         }
 
         // --- Game Logic ---
@@ -365,27 +374,33 @@
             // 1. Update score
             score++;
 
-            // 2. Check for high score
+            // 2. Play the standard click sound
+            playClickSound();
+
+            // 3. Check if the score just matched the high score and celebrate
+            if (score === highScore && highScore > 0) {
+                playCelebrationSound();
+                triggerConfetti();
+            }
+
+            // 4. Update the display
+            updateDisplays();
+        }
+
+        function resetGame() {
+            // 1. Check if the final score is a new high score and update it silently
             if (score > highScore) {
                 highScore = score;
                 localStorage.setItem('focusGameHighScore', highScore);
             }
-
-            // 3. Update on-screen text
-            updateDisplays();
-
-            // 4. Play feedback sound
-            playClickSound();
-
-            // 5. Check for milestone
-            if (score % CELEBRATION_MILESTONE === 0) {
-                playCelebrationSound();
-            }
-        }
-
-        function resetGame() {
+            
+            // 2. Play a simple reset sound
             playResetSound();
+            
+            // 3. Reset the current score to 0
             score = 0;
+            
+            // 4. Update the displays
             updateDisplays();
         }
 
