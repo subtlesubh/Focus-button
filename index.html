@@ -152,8 +152,6 @@
 
         .controls {
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
             justify-content: center;
         }
 
@@ -170,6 +168,20 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            width: 200px; /* Set a fixed width for both buttons */
+            text-align: center; /* Ensure text is centered within the button */
+        }
+        
+        .control-button:first-child {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right-width: 0.5px;
+        }
+
+        .control-button:last-child {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-left-width: 0.5px;
         }
 
         .control-button:hover {
@@ -255,6 +267,16 @@
             .info-section {
                 flex-direction: column;
                 gap: 1rem;
+            }
+            .controls {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 90%;
+            }
+            .control-button {
+                width: 100%;
+                border-radius: 50px !important; /* Override split button style on mobile */
+                border-width: 1px !important;
             }
         }
 
