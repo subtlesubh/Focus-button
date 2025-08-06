@@ -17,6 +17,7 @@
             --border-color: #333333;
             --primary-color: #ffffff;
             --success-color: #22c55e; /* Green for success */
+            --celebration-color: #3b82f6; /* Blue for celebration */
             --button-bg-color: #ffffff;
             --button-text-color: #000000;
         }
@@ -112,7 +113,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2.5rem;
+            gap: 1.5rem; /* Adjusted gap */
             flex-grow: 1;
             padding: 1rem 0;
         }
@@ -151,14 +152,16 @@
 
         .controls {
             display: flex;
-            gap: 1.5rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .control-button {
             background: transparent;
             border: 1px solid var(--border-color);
             color: var(--muted-color);
-            padding: 0.8rem 2rem;
+            padding: 0.8rem 1.5rem;
             border-radius: 50px;
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1em;
@@ -190,6 +193,20 @@
             color: var(--text-color);
             font-weight: 500;
             transition: color 0.3s ease;
+        }
+
+        .message-display {
+            height: 1.5em; 
+            font-weight: 700;
+            font-size: 1.5em;
+            color: var(--celebration-color);
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .message-display.visible {
+            opacity: 1;
         }
 
         .footer-links a {
@@ -258,13 +275,16 @@
         <div class="info-section">
             <div class="stat-item">High Score: <strong id="highScoreDisplay">0</strong></div>
         </div>
+        
+        <div id="celebrationMessage" class="message-display">High Score Broken!</div>
 
         <div id="scoreDisplay" class="score-display">0</div>
 
         <button id="mainButton" class="main-button">Click</button>
 
         <div class="controls">
-            <button class="control-button" onclick="resetGame()">Reset</button>
+            <button class="control-button" onclick="resetGame()">Reset Score</button>
+            <button class="control-button" onclick="resetHighScore()">Reset High Score</button>
         </div>
     </div>
     
@@ -286,6 +306,7 @@
         const scoreDisplay = document.getElementById('scoreDisplay');
         const highScoreDisplay = document.getElementById('highScoreDisplay');
         const themeSwitcher = document.getElementById('themeSwitcher');
+        const celebrationMessage = document.getElementById('celebrationMessage');
 
         // --- Theme Switcher Logic ---
         function setLightMode() {
@@ -381,6 +402,10 @@
             if (score === highScore && highScore > 0) {
                 playCelebrationSound();
                 triggerConfetti();
+                celebrationMessage.classList.add('visible');
+                setTimeout(() => {
+                    celebrationMessage.classList.remove('visible');
+                }, 2000);
             }
 
             // 4. Update the display
@@ -403,6 +428,14 @@
             // 4. Update the displays
             updateDisplays();
         }
+
+        function resetHighScore() {
+            highScore = 0;
+            localStorage.removeItem('focusGameHighScore');
+            playResetSound();
+            updateDisplays();
+        }
+
 
         function initializeGame() {
             // Load theme from local storage
